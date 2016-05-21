@@ -1,0 +1,10 @@
+<%- include header%>
+<% if(user) { %>
+  <span><a href="/edit/<%= post._id %>">编辑</a></span>
+  <span><a href="/remove/<%= post._id %>">删除</a></span>
+<% } %>
+<p class='info'>
+	TIME: <%= post.time.day %>
+</p>
+<p><%- post.post %></p>
+<%- include footer %>
