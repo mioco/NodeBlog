@@ -28,7 +28,8 @@ module.exports = function(app) {
 			res.render('article', {
 				title: post.title,
 				post: post,
-				user: req.session.user
+				user: req.session.user,
+				pv: post.pv
 			});
 		});
 	});
@@ -65,7 +66,7 @@ module.exports = function(app) {
 	app.get('/about', function(req, res, next) {
 	  res.render('about', { title: '关于' });
 	});
-	app.get('/link', function(req, res, next) {
+	app.get('/links', function(req, res, next) {
 	  res.render('link', { title: '链接' });
 	});
 }

@@ -25,7 +25,8 @@ Post.prototype.save = function(callback) {
 		time: time,
 		title: this.title,
 		post: this.post,
-		tags: this.tags
+		tags: this.tags,
+		pv: 0
 	};
 	//open database
 	mongodb.open(function(err, db) {
@@ -85,12 +86,21 @@ Post.getOne = function(_id, callback) {
 			}
 			collection.findOne({
 				'_id': mgdb.ObjectID.createFromHexString(_id) 
-			},function(err, doc) {
-				mongodb.close();
-				if (err) {  return callback(err);}
-				//parsing the markdown to HTML
-				doc.post = markdown.toHTML(doc.post);
-				callback(null, doc);
+			},function(err, doc) {			
+				if (err) {  
+					mongodb.close();
+					return callback(err);}
+				if (doc) {
+					collection.update({'_id': mgdb.ObjectID.createFromHexString(_id)},{
+						$inc: {'pv': 1}
+					}, function(err) {
+						mongodb.close();
+						if (err) { return callback(err);}
+					});
+					//parsing the markdown to HTML
+					doc.post = markdown.toHTML(doc.post);
+					callback(null, doc);
+				}
 			});
 		});
 	});
@@ -117,11 +127,11 @@ Post.edit = function(_id, cb) {
 };
 
 //edit post update
-Post.update = function(_id, title, post, cb) {
+Post.update = function(_id, title, post, tags,cb) {
 	mongodb.open(function(err, db) {
 		if (err) { return cb(err);}
 		db.collection('posts', function(err, collection) {
-	console.log(_id, title,post)
+	console.log(_id, title,post,tags)
 			if (err) {
 				mongodb.close();
 				return cb(err);
@@ -129,7 +139,8 @@ Post.update = function(_id, title, post, cb) {
 			collection.update({'_id': mgdb.ObjectID.createFromHexString(_id)}, {
 				$set: {
 					post:post,
-					title: title
+					title: title,
+					tags: tags
 				}
 			}, function(err) {
 				mongodb.close();

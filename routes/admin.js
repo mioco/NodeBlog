@@ -108,7 +108,7 @@ module.exports = function(app) {
 
 	app.post('/edit/:_id', checkLogin);
 	app.post('/edit/:_id', function(req, res) {
-		Post.update(req.params._id, req.body.title, req.body.post, function(err) {
+		Post.update(req.params._id, req.body.title, req.body.post, req.body.tags, function(err) {
 			var url = encodeURI('/article/' + req.params._id);
 			if (err) { return res.redirect(url);}
 			req.flash('success', '修改成功');
